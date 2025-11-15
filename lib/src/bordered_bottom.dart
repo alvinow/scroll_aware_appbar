@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 /// Wrapper for custom bottom widget with border
+/// Wrapper for custom bottom widget with border
 class BorderedBottom extends StatelessWidget implements PreferredSizeWidget {
   final PreferredSizeWidget bottom;
   final bool isScrolled;
@@ -10,12 +11,13 @@ class BorderedBottom extends StatelessWidget implements PreferredSizeWidget {
   final Duration animationDuration;
 
   const BorderedBottom({
+    Key? key,
     required this.bottom,
     required this.isScrolled,
     required this.borderColor,
     required this.borderThickness,
     required this.animationDuration,
-  });
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
