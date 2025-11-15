@@ -1,22 +1,19 @@
-// FILE: lib/src/scroll_aware_appbar_widget.dart
-// ============================================================================
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-/// A scroll-aware AppBar that displays a bottom border when content is scrolled.
+/// A Scaffold with a scroll-aware AppBar that displays a bottom border when content is scrolled.
 ///
-/// This widget automatically detects scroll position and shows/hides a bottom
-/// border to indicate when content is scrolling beneath the AppBar, similar
-/// to Google's Material Design patterns.
+/// This widget extends the standard Scaffold interface and automatically detects scroll
+/// position to show/hide a bottom border on the AppBar, similar to Google's Material
+/// Design patterns. The AppBar remains pinned and always visible.
 ///
 /// The border appears when the user scrolls down and disappears when at the top,
 /// providing a visual cue about the scroll position.
 ///
 /// Example:
 /// ```dart
-/// ScrollAwareAppBar(
-///   title: Text('My App'),
+/// ScrollAwareScaffold(
+///   appBarTitle: Text('My App'),
 ///   body: ListView.builder(
 ///     itemCount: 50,
 ///     itemBuilder: (context, index) => ListTile(
@@ -25,39 +22,36 @@ import 'package:flutter/services.dart';
 ///   ),
 /// )
 /// ```
-class ScrollAwareAppBar extends StatefulWidget {
+class ScrollAwareScaffold extends StatefulWidget {
   /// The widget to display in the AppBar title area
-  final Widget? title;
+  final Widget? appBarTitle;
 
-  /// The widget to display as the page body
+  /// The widget to display as the page body (will be wrapped in scrollable)
   final Widget body;
 
   /// Leading widget in the AppBar (typically a back button or menu icon)
-  final Widget? leading;
+  final Widget? appBarLeading;
 
   /// Actions to display at the end of the AppBar
-  final List<Widget>? actions;
+  final List<Widget>? appBarActions;
 
   /// Background color of the AppBar
-  final Color? backgroundColor;
+  final Color? appBarBackgroundColor;
 
   /// Color of the bottom border when scrolled
-  final Color? borderColor;
+  final Color? appBarBorderColor;
 
   /// Thickness of the bottom border in logical pixels
-  final double borderThickness;
+  final double appBarBorderThickness;
 
   /// Whether to center the title
-  final bool centerTitle;
+  final bool appBarCenterTitle;
 
-  /// Elevation of the AppBar when scrolled
-  final double scrolledElevation;
-
-  /// Elevation of the AppBar when at top
-  final double elevation;
+  /// Elevation of the AppBar
+  final double appBarElevation;
 
   /// AppBar bottom widget (e.g., TabBar)
-  final PreferredSizeWidget? bottom;
+  final PreferredSizeWidget? appBarBottom;
 
   /// Scroll offset threshold to trigger border appearance (in pixels)
   final double scrollThreshold;
@@ -66,10 +60,10 @@ class ScrollAwareAppBar extends StatefulWidget {
   final Duration animationDuration;
 
   /// Text style for the title
-  final TextStyle? titleTextStyle;
+  final TextStyle? appBarTitleTextStyle;
 
   /// Icon theme for AppBar icons
-  final IconThemeData? iconTheme;
+  final IconThemeData? appBarIconTheme;
 
   /// System overlay style for status bar
   final SystemUiOverlayStyle? systemOverlayStyle;
@@ -81,36 +75,114 @@ class ScrollAwareAppBar extends StatefulWidget {
   final bool automaticallyImplyLeading;
 
   /// Flexible space widget
-  final Widget? flexibleSpace;
+  final Widget? appBarFlexibleSpace;
 
-  const ScrollAwareAppBar({
+  /// Tool bar height
+  final double? appBarToolbarHeight;
+
+  // Extended Scaffold properties
+
+  /// A bottom navigation bar to display at the bottom of the scaffold
+  final Widget? bottomNavigationBar;
+
+  /// The persistent bottom sheet to display
+  final Widget? bottomSheet;
+
+  /// Background color of the scaffold
+  final Color? scaffoldBackgroundColor;
+
+  /// A floating action button to display
+  final Widget? floatingActionButton;
+
+  /// Location of the floating action button
+  final FloatingActionButtonLocation? floatingActionButtonLocation;
+
+  /// Animator for the floating action button
+  final FloatingActionButtonAnimator? floatingActionButtonAnimator;
+
+  /// A drawer to display on the left side
+  final Widget? drawer;
+
+  /// A drawer to display on the right side
+  final Widget? endDrawer;
+
+  /// Color of the drawer scrim
+  final Color? drawerScrimColor;
+
+  /// Width of the drawer
+  final double? drawerEdgeDragWidth;
+
+  /// Whether drawer can be opened by dragging
+  final bool drawerEnableOpenDragGesture;
+
+  /// Whether end drawer can be opened by dragging
+  final bool endDrawerEnableOpenDragGesture;
+
+  /// Whether to resize body to avoid bottom inset
+  final bool? resizeToAvoidBottomInset;
+
+  /// Whether body should extend behind AppBar
+  final bool extendBody;
+
+  /// Whether body should extend behind bottom navigation bar
+  final bool extendBodyBehindAppBar;
+
+  /// Callback when drawer is changed
+  final DrawerCallback? onDrawerChanged;
+
+  /// Callback when end drawer is changed
+  final DrawerCallback? onEndDrawerChanged;
+
+  /// Restoration ID for state restoration
+  final String? restorationId;
+
+  const ScrollAwareScaffold({
     Key? key,
-    this.title,
+    this.appBarTitle,
     required this.body,
-    this.leading,
-    this.actions,
-    this.backgroundColor,
-    this.borderColor,
-    this.borderThickness = 1.0,
-    this.centerTitle = false,
-    this.scrolledElevation = 0.0,
-    this.elevation = 0.0,
-    this.bottom,
+    this.appBarLeading,
+    this.appBarActions,
+    this.appBarBackgroundColor,
+    this.appBarBorderColor,
+    this.appBarBorderThickness = 1.0,
+    this.appBarCenterTitle = false,
+    this.appBarElevation = 0.0,
+    this.appBarBottom,
     this.scrollThreshold = 5.0,
     this.animationDuration = const Duration(milliseconds: 200),
-    this.titleTextStyle,
-    this.iconTheme,
+    this.appBarTitleTextStyle,
+    this.appBarIconTheme,
     this.systemOverlayStyle,
     this.primary = true,
     this.automaticallyImplyLeading = true,
-    this.flexibleSpace,
+    this.appBarFlexibleSpace,
+    this.appBarToolbarHeight,
+    // Scaffold properties
+    this.bottomNavigationBar,
+    this.bottomSheet,
+    this.scaffoldBackgroundColor,
+    this.floatingActionButton,
+    this.floatingActionButtonLocation,
+    this.floatingActionButtonAnimator,
+    this.drawer,
+    this.endDrawer,
+    this.drawerScrimColor,
+    this.drawerEdgeDragWidth,
+    this.drawerEnableOpenDragGesture = true,
+    this.endDrawerEnableOpenDragGesture = true,
+    this.resizeToAvoidBottomInset,
+    this.extendBody = false,
+    this.extendBodyBehindAppBar = false,
+    this.onDrawerChanged,
+    this.onEndDrawerChanged,
+    this.restorationId,
   }) : super(key: key);
 
   @override
-  State<ScrollAwareAppBar> createState() => _ScrollAwareAppBarState();
+  State<ScrollAwareScaffold> createState() => _ScrollAwareScaffoldState();
 }
 
-class _ScrollAwareAppBarState extends State<ScrollAwareAppBar> {
+class _ScrollAwareScaffoldState extends State<ScrollAwareScaffold> {
   final ScrollController _scrollController = ScrollController();
   bool _isScrolled = false;
 
@@ -139,60 +211,81 @@ class _ScrollAwareAppBarState extends State<ScrollAwareAppBar> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final defaultBorderColor = widget.borderColor ??
+    final defaultBorderColor = widget.appBarBorderColor ??
         theme.dividerColor.withOpacity(0.2);
 
     return Scaffold(
-      body: NestedScrollView(
-        controller: _scrollController,
-        headerSliverBuilder: (context, innerBoxIsScrolled) {
-          return [
-            SliverAppBar(
-              title: widget.title,
-              leading: widget.leading,
-              actions: widget.actions,
-              backgroundColor: widget.backgroundColor ?? theme.scaffoldBackgroundColor,
-              elevation: _isScrolled ? widget.scrolledElevation : widget.elevation,
-              centerTitle: widget.centerTitle,
-              floating: true,
-              pinned: true,
-              snap: false,
-              systemOverlayStyle: widget.systemOverlayStyle,
-              primary: widget.primary,
-              automaticallyImplyLeading: widget.automaticallyImplyLeading,
-              flexibleSpace: widget.flexibleSpace,
-              bottom: widget.bottom != null
-                  ? _BorderedBottom(
-                      bottom: widget.bottom!,
-                      isScrolled: _isScrolled,
-                      borderColor: defaultBorderColor,
-                      borderThickness: widget.borderThickness,
-                      animationDuration: widget.animationDuration,
-                    )
-                  : PreferredSize(
-                      preferredSize: const Size.fromHeight(0.0),
-                      child: AnimatedContainer(
-                        duration: widget.animationDuration,
-                        curve: Curves.easeInOut,
-                        height: widget.borderThickness,
-                        decoration: BoxDecoration(
-                          border: Border(
-                            bottom: BorderSide(
-                              color: _isScrolled
-                                  ? defaultBorderColor
-                                  : Colors.transparent,
-                              width: widget.borderThickness,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-              titleTextStyle: widget.titleTextStyle,
-              iconTheme: widget.iconTheme,
+      // Scaffold properties
+      backgroundColor: widget.scaffoldBackgroundColor,
+      bottomNavigationBar: widget.bottomNavigationBar,
+      bottomSheet: widget.bottomSheet,
+      floatingActionButton: widget.floatingActionButton,
+      floatingActionButtonLocation: widget.floatingActionButtonLocation,
+      floatingActionButtonAnimator: widget.floatingActionButtonAnimator,
+      drawer: widget.drawer,
+      endDrawer: widget.endDrawer,
+      drawerScrimColor: widget.drawerScrimColor,
+      drawerEdgeDragWidth: widget.drawerEdgeDragWidth,
+      drawerEnableOpenDragGesture: widget.drawerEnableOpenDragGesture,
+      endDrawerEnableOpenDragGesture: widget.endDrawerEnableOpenDragGesture,
+      resizeToAvoidBottomInset: widget.resizeToAvoidBottomInset,
+      extendBody: widget.extendBody,
+      extendBodyBehindAppBar: widget.extendBodyBehindAppBar,
+      onDrawerChanged: widget.onDrawerChanged,
+      onEndDrawerChanged: widget.onEndDrawerChanged,
+      restorationId: widget.restorationId,
+      // AppBar
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(
+            (widget.appBarToolbarHeight ?? kToolbarHeight) +
+                (widget.appBarBottom?.preferredSize.height ?? 0.0) +
+                widget.appBarBorderThickness
+        ),
+        child: AppBar(
+          title: widget.appBarTitle,
+          leading: widget.appBarLeading,
+          actions: widget.appBarActions,
+          backgroundColor: widget.appBarBackgroundColor ?? theme.scaffoldBackgroundColor,
+          elevation: widget.appBarElevation,
+          centerTitle: widget.appBarCenterTitle,
+          systemOverlayStyle: widget.systemOverlayStyle,
+          primary: widget.primary,
+          automaticallyImplyLeading: widget.automaticallyImplyLeading,
+          flexibleSpace: widget.appBarFlexibleSpace,
+          titleTextStyle: widget.appBarTitleTextStyle,
+          iconTheme: widget.appBarIconTheme,
+          toolbarHeight: widget.appBarToolbarHeight,
+          bottom: widget.appBarBottom != null
+              ? _BorderedBottom(
+            bottom: widget.appBarBottom!,
+            isScrolled: _isScrolled,
+            borderColor: defaultBorderColor,
+            borderThickness: widget.appBarBorderThickness,
+            animationDuration: widget.animationDuration,
+          )
+              : PreferredSize(
+            preferredSize: Size.fromHeight(widget.appBarBorderThickness),
+            child: AnimatedContainer(
+              duration: widget.animationDuration,
+              curve: Curves.easeInOut,
+              height: widget.appBarBorderThickness,
+              decoration: BoxDecoration(
+                border: Border(
+                  bottom: BorderSide(
+                    color: _isScrolled
+                        ? defaultBorderColor
+                        : Colors.transparent,
+                    width: widget.appBarBorderThickness,
+                  ),
+                ),
+              ),
             ),
-          ];
-        },
-        body: widget.body,
+          ),
+        ),
+      ),
+      body: ListView(
+        controller: _scrollController,
+        children: [widget.body],
       ),
     );
   }
@@ -244,6 +337,7 @@ class _BorderedBottom extends StatelessWidget implements PreferredSizeWidget {
 }
 
 /// Alternative implementation using CustomScrollView for more flexibility.
+/// AppBar remains pinned and always visible.
 ///
 /// This version is ideal when you need to use slivers directly or want
 /// more control over the scrollable content.
@@ -311,6 +405,12 @@ class ScrollAwareAppBarCustom extends StatefulWidget {
   /// Flexible space widget
   final Widget? flexibleSpace;
 
+  /// Elevation of the AppBar
+  final double elevation;
+
+  /// Tool bar height
+  final double toolbarHeight;
+
   /// List of slivers to display in the body
   final List<Widget> slivers;
 
@@ -332,6 +432,8 @@ class ScrollAwareAppBarCustom extends StatefulWidget {
     this.primary = true,
     this.automaticallyImplyLeading = true,
     this.flexibleSpace,
+    this.elevation = 0.0,
+    this.toolbarHeight=15,
     required this.slivers,
   }) : super(key: key);
 
@@ -380,41 +482,42 @@ class _ScrollAwareAppBarCustomState extends State<ScrollAwareAppBarCustom> {
             leading: widget.leading,
             actions: widget.actions,
             backgroundColor: widget.backgroundColor ?? theme.scaffoldBackgroundColor,
-            elevation: 0,
+            elevation: widget.elevation,
             centerTitle: widget.centerTitle,
-            floating: true,
-            pinned: true,
+            pinned: true, // Always visible
+            floating: false,
             snap: false,
             systemOverlayStyle: widget.systemOverlayStyle,
             primary: widget.primary,
             automaticallyImplyLeading: widget.automaticallyImplyLeading,
             flexibleSpace: widget.flexibleSpace,
+            toolbarHeight: widget.toolbarHeight,
             bottom: widget.bottom != null
                 ? _BorderedBottom(
-                    bottom: widget.bottom!,
-                    isScrolled: _isScrolled,
-                    borderColor: defaultBorderColor,
-                    borderThickness: widget.borderThickness,
-                    animationDuration: widget.animationDuration,
-                  )
+              bottom: widget.bottom!,
+              isScrolled: _isScrolled,
+              borderColor: defaultBorderColor,
+              borderThickness: widget.borderThickness,
+              animationDuration: widget.animationDuration,
+            )
                 : PreferredSize(
-                    preferredSize: const Size.fromHeight(0.0),
-                    child: AnimatedContainer(
-                      duration: widget.animationDuration,
-                      curve: Curves.easeInOut,
-                      height: widget.borderThickness,
-                      decoration: BoxDecoration(
-                        border: Border(
-                          bottom: BorderSide(
-                            color: _isScrolled
-                                ? defaultBorderColor
-                                : Colors.transparent,
-                            width: widget.borderThickness,
-                          ),
-                        ),
-                      ),
+              preferredSize: Size.fromHeight(widget.borderThickness),
+              child: AnimatedContainer(
+                duration: widget.animationDuration,
+                curve: Curves.easeInOut,
+                height: widget.borderThickness,
+                decoration: BoxDecoration(
+                  border: Border(
+                    bottom: BorderSide(
+                      color: _isScrolled
+                          ? defaultBorderColor
+                          : Colors.transparent,
+                      width: widget.borderThickness,
                     ),
                   ),
+                ),
+              ),
+            ),
             titleTextStyle: widget.titleTextStyle,
             iconTheme: widget.iconTheme,
           ),
@@ -424,3 +527,4 @@ class _ScrollAwareAppBarCustomState extends State<ScrollAwareAppBarCustom> {
     );
   }
 }
+
