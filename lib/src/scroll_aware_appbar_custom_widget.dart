@@ -13,26 +13,6 @@ import 'package:scroll_aware_appbar/src/bordered_bottom.dart';
 ///
 /// Example:
 /// ```dart
-/// ScrollAwareScaffold(
-///   appBarTitle: Text('My App'),
-///   body: ListView.builder(
-///     itemCount: 50,
-///     itemBuilder: (context, index) => ListTile(
-///       title: Text('Item $index'),
-///     ),
-///   ),
-/// )
-/// ```
-
-
-/// Alternative implementation using CustomScrollView for more flexibility.
-/// AppBar remains pinned and always visible.
-///
-/// This version is ideal when you need to use slivers directly or want
-/// more control over the scrollable content.
-///
-/// Example:
-/// ```dart
 /// ScrollAwareAppBarCustom(
 ///   title: Text('Custom Scroll'),
 ///   slivers: [
@@ -122,12 +102,13 @@ class ScrollAwareAppBarCustom extends StatefulWidget {
     this.automaticallyImplyLeading = true,
     this.flexibleSpace,
     this.elevation = 0.0,
-    this.toolbarHeight=15,
+    this.toolbarHeight = 56.0,
     required this.slivers,
   }) : super(key: key);
 
   @override
-  State<ScrollAwareAppBarCustom> createState() => _ScrollAwareAppBarCustomState();
+  State<ScrollAwareAppBarCustom> createState() =>
+      _ScrollAwareAppBarCustomState();
 }
 
 class _ScrollAwareAppBarCustomState extends State<ScrollAwareAppBarCustom> {
@@ -156,11 +137,42 @@ class _ScrollAwareAppBarCustomState extends State<ScrollAwareAppBarCustom> {
     }
   }
 
+  PreferredSizeWidget _buildBottomWidget() {
+    final theme = Theme.of(context);
+    final defaultBorderColor =
+        widget.borderColor ?? theme.dividerColor.withOpacity(0.2);
+
+    if (widget.bottom != null) {
+      return BorderedBottom(
+        bottom: widget.bottom!,
+        isScrolled: _isScrolled,
+        borderColor: defaultBorderColor,
+        borderThickness: widget.borderThickness,
+        animationDuration: widget.animationDuration,
+      );
+    }
+
+    return PreferredSize(
+      preferredSize: Size.fromHeight(widget.borderThickness),
+      child: AnimatedContainer(
+        duration: widget.animationDuration,
+        curve: Curves.easeInOut,
+        height: widget.borderThickness,
+        decoration: BoxDecoration(
+          border: Border(
+            bottom: BorderSide(
+              color: _isScrolled ? defaultBorderColor : Colors.transparent,
+              width: widget.borderThickness,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final defaultBorderColor = widget.borderColor ??
-        theme.dividerColor.withOpacity(0.2);
 
     return Scaffold(
       body: CustomScrollView(
@@ -170,7 +182,8 @@ class _ScrollAwareAppBarCustomState extends State<ScrollAwareAppBarCustom> {
             title: widget.title,
             leading: widget.leading,
             actions: widget.actions,
-            backgroundColor: widget.backgroundColor ?? theme.scaffoldBackgroundColor,
+            backgroundColor:
+            widget.backgroundColor ?? theme.scaffoldBackgroundColor,
             elevation: widget.elevation,
             centerTitle: widget.centerTitle,
             pinned: true, // Always visible
@@ -181,32 +194,7 @@ class _ScrollAwareAppBarCustomState extends State<ScrollAwareAppBarCustom> {
             automaticallyImplyLeading: widget.automaticallyImplyLeading,
             flexibleSpace: widget.flexibleSpace,
             toolbarHeight: widget.toolbarHeight,
-            bottom: widget.bottom != null
-                ? BorderedBottom(
-              bottom: widget.bottom!,
-              isScrolled: _isScrolled,
-              borderColor: defaultBorderColor,
-              borderThickness: widget.borderThickness,
-              animationDuration: widget.animationDuration,
-            )
-                : PreferredSize(
-              preferredSize: Size.fromHeight(widget.borderThickness),
-              child: AnimatedContainer(
-                duration: widget.animationDuration,
-                curve: Curves.easeInOut,
-                height: widget.borderThickness,
-                decoration: BoxDecoration(
-                  border: Border(
-                    bottom: BorderSide(
-                      color: _isScrolled
-                          ? defaultBorderColor
-                          : Colors.transparent,
-                      width: widget.borderThickness,
-                    ),
-                  ),
-                ),
-              ),
-            ),
+            bottom: _buildBottomWidget(),
             titleTextStyle: widget.titleTextStyle,
             iconTheme: widget.iconTheme,
           ),
@@ -216,4 +204,3 @@ class _ScrollAwareAppBarCustomState extends State<ScrollAwareAppBarCustom> {
     );
   }
 }
-
