@@ -1,7 +1,5 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-/// Wrapper for custom bottom widget with border
 /// Wrapper for custom bottom widget with border
 class BorderedBottom extends StatelessWidget implements PreferredSizeWidget {
   final PreferredSizeWidget bottom;
@@ -43,7 +41,9 @@ class BorderedBottom extends StatelessWidget implements PreferredSizeWidget {
   }
 
   @override
-  Size get preferredSize => Size.fromHeight(
-    bottom.preferredSize.height + borderThickness,
-  );
+  Size get preferredSize {
+    return Size.fromHeight(
+      bottom.preferredSize.height + borderThickness,
+    );
+  }
 }

@@ -188,11 +188,42 @@ class _ScrollAwareScaffoldState extends State<ScrollAwareScaffold> {
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
+  PreferredSizeWidget _buildBottomWidget() {
     final theme = Theme.of(context);
     final defaultBorderColor = widget.appBarBorderColor ??
         theme.dividerColor.withOpacity(0.2);
+
+    if (widget.appBarBottom != null) {
+      return BorderedBottom(
+        bottom: widget.appBarBottom!,
+        isScrolled: _isScrolled,
+        borderColor: defaultBorderColor,
+        borderThickness: widget.appBarBorderThickness,
+        animationDuration: widget.animationDuration,
+      );
+    }
+
+    return PreferredSize(
+      preferredSize: Size.fromHeight(widget.appBarBorderThickness),
+      child: AnimatedContainer(
+        duration: widget.animationDuration,
+        curve: Curves.easeInOut,
+        height: widget.appBarBorderThickness,
+        decoration: BoxDecoration(
+          border: Border(
+            bottom: BorderSide(
+              color: _isScrolled ? defaultBorderColor : Colors.transparent,
+              width: widget.appBarBorderThickness,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
 
     return Scaffold(
       // Scaffold properties
@@ -217,15 +248,16 @@ class _ScrollAwareScaffoldState extends State<ScrollAwareScaffold> {
       // AppBar
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(
-            (widget.appBarToolbarHeight ?? kToolbarHeight) +
-                (widget.appBarBottom?.preferredSize.height ?? 0.0) +
-                widget.appBarBorderThickness
+          (widget.appBarToolbarHeight ?? kToolbarHeight) +
+              (widget.appBarBottom?.preferredSize.height ?? 0.0) +
+              widget.appBarBorderThickness,
         ),
         child: AppBar(
           title: widget.appBarTitle,
           leading: widget.appBarLeading,
           actions: widget.appBarActions,
-          backgroundColor: widget.appBarBackgroundColor ?? theme.scaffoldBackgroundColor,
+          backgroundColor:
+          widget.appBarBackgroundColor ?? theme.scaffoldBackgroundColor,
           elevation: widget.appBarElevation,
           centerTitle: widget.appBarCenterTitle,
           systemOverlayStyle: widget.systemOverlayStyle,
@@ -235,32 +267,7 @@ class _ScrollAwareScaffoldState extends State<ScrollAwareScaffold> {
           titleTextStyle: widget.appBarTitleTextStyle,
           iconTheme: widget.appBarIconTheme,
           toolbarHeight: widget.appBarToolbarHeight,
-          bottom: widget.appBarBottom != null
-              ? BorderedBottom(
-            bottom: widget.appBarBottom!,
-            isScrolled: _isScrolled,
-            borderColor: defaultBorderColor,
-            borderThickness: widget.appBarBorderThickness,
-            animationDuration: widget.animationDuration,
-          )
-              : PreferredSize(
-            preferredSize: Size.fromHeight(widget.appBarBorderThickness),
-            child: AnimatedContainer(
-              duration: widget.animationDuration,
-              curve: Curves.easeInOut,
-              height: widget.appBarBorderThickness,
-              decoration: BoxDecoration(
-                border: Border(
-                  bottom: BorderSide(
-                    color: _isScrolled
-                        ? defaultBorderColor
-                        : Colors.transparent,
-                    width: widget.appBarBorderThickness,
-                  ),
-                ),
-              ),
-            ),
-          ),
+          bottom: _buildBottomWidget(),
         ),
       ),
       body: ListView(
@@ -270,4 +277,3 @@ class _ScrollAwareScaffoldState extends State<ScrollAwareScaffold> {
     );
   }
 }
-
