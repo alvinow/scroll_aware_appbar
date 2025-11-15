@@ -116,6 +116,10 @@ class ScrollAwareScaffold extends StatefulWidget {
   /// Restoration ID for state restoration
   final String? restorationId;
 
+  /// Whether to automatically wrap body in ListView (default: true)
+  /// Set to false if body is already scrollable
+  final bool wrapBodyInScrollView;
+
   const ScrollAwareScaffold({
     Key? key,
     this.appBarTitle,
@@ -156,6 +160,7 @@ class ScrollAwareScaffold extends StatefulWidget {
     this.onDrawerChanged,
     this.onEndDrawerChanged,
     this.restorationId,
+    this.wrapBodyInScrollView = true,
   }) : super(key: key);
 
   @override
@@ -221,6 +226,31 @@ class _ScrollAwareScaffoldState extends State<ScrollAwareScaffold> {
     );
   }
 
+  Widget _buildBody() {
+    if (widget.wrapBodyInScrollView) {
+      return ListView(
+        controller: _scrollController,
+        children: [widget.body],
+      );
+    } else {
+      // If body is already scrollable, wrap it in NotificationListener
+      return NotificationListener<ScrollNotification>(
+        onNotification: (notification) {
+          if (notification is ScrollUpdateNotification) {
+            final isScrolled = notification.metrics.pixels > widget.scrollThreshold;
+            if (_isScrolled != isScrolled) {
+              setState(() {
+                _isScrolled = isScrolled;
+              });
+            }
+          }
+          return false;
+        },
+        child: widget.body,
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -270,10 +300,7 @@ class _ScrollAwareScaffoldState extends State<ScrollAwareScaffold> {
           bottom: _buildBottomWidget(),
         ),
       ),
-      body: ListView(
-        controller: _scrollController,
-        children: [widget.body],
-      ),
+      body: _buildBody(),
     );
   }
 }
